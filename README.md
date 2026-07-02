@@ -1,8 +1,6 @@
 # Faithful God — Gratitude Concert 2026
 
-A full clone of the [faithfulgod.netlify.app](https://faithfulgod.netlify.app/) event
-registration site: a concert hosted at Obafemi Awolowo University on July 17, 2026 by
-Pst (Dr.) & Dcns. Idowu Olowoyo. Built with TanStack Start on Netlify.
+A full event registration site: for a concert or event.
 
 ## Tech Stack
 
