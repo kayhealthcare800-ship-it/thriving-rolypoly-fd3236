@@ -252,11 +252,19 @@ function FaceScanStep({
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [cameraError, setCameraError] = useState<string | null>(null)
+  const [retryToken, setRetryToken] = useState(0)
 
   useEffect(() => {
     let cancelled = false
     async function start() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCameraError(
+          "Your browser doesn't support live camera capture. Use the upload option below instead.",
+        )
+        return
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user' },
@@ -271,15 +279,31 @@ function FaceScanStep({
           videoRef.current.srcObject = stream
         }
       } catch {
-        setCameraError('Camera access is required to capture your live face scan.')
+        setCameraError(
+          'Camera access was blocked or unavailable. Allow camera permission and retry, or upload a photo below.',
+        )
       }
     }
-    if (!selfie) start()
+    if (!selfie) {
+      setCameraError(null)
+      start()
+    }
     return () => {
       cancelled = true
       streamRef.current?.getTracks().forEach((t) => t.stop())
     }
-  }, [selfie])
+  }, [selfie, retryToken])
+
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') setSelfie(reader.result)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
 
   function capture() {
     const video = videoRef.current
@@ -323,8 +347,15 @@ function FaceScanStep({
         {selfie ? (
           <img src={selfie} alt="Captured face scan" className="h-full w-full object-cover" />
         ) : cameraError ? (
-          <div className="flex h-full items-center justify-center p-6 text-center text-sm text-white/70">
-            {cameraError}
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-white/70">
+            <p>{cameraError}</p>
+            <button
+              type="button"
+              onClick={() => setRetryToken((t) => t + 1)}
+              className="rounded-full border border-white/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/10"
+            >
+              Retry Camera
+            </button>
           </div>
         ) : (
           <>
@@ -360,6 +391,26 @@ function FaceScanStep({
         >
           Retake Photo
         </button>
+      )}
+
+      {cameraError && !selfie && (
+        <div className="mt-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="text-xs font-semibold uppercase tracking-wide text-fg-maroon underline"
+          >
+            Upload a Photo Instead
+          </button>
+        </div>
       )}
 
       {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
