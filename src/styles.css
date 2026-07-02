@@ -1,0 +1,54 @@
+@import "tailwindcss" source("../");
+
+:root {
+  --fg-cream: #faf6ec;
+  --fg-maroon: #5b1327;
+  --fg-maroon-dark: #430d1c;
+  --fg-gold: #c9a24b;
+  --fg-gold-soft: #e4c98a;
+  --fg-ink: #4a3b1e;
+}
+
+@theme {
+  --color-fg-cream: #faf6ec;
+  --color-fg-maroon: #5b1327;
+  --color-fg-maroon-dark: #430d1c;
+  --color-fg-gold: #c9a24b;
+  --color-fg-gold-soft: #e4c98a;
+  --color-fg-ink: #4a3b1e;
+  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--fg-cream);
+  color: var(--fg-ink);
+}
+
+code {
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.font-script {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(74, 59, 30, 0.2);
+  background-color: #fff;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--fg-ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  border-color: var(--fg-maroon);
+  box-shadow: 0 0 0 3px rgba(91, 19, 39, 0.12);
+}
